@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenAI ChatGPT Ad Revenue Model</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-border: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #f59e0b;
+    --accent2: #3b82f6;
+    --green: #10b981;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  .header h1 span { color: var(--accent); }
+  .header p { color: var(--text-muted); font-size: 0.95rem; }
+  .grid { display: grid; gap: 20px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .big-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .big-number.blue { color: var(--accent2); }
+  .big-number.green { color: var(--green); }
+  .big-number.purple { color: var(--purple); }
+  .big-number small { font-size: 0.5em; color: var(--text-muted); font-weight: 400; }
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 32px 0 16px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .slider-group { margin-bottom: 16px; }
+  .slider-group label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+  }
+  .slider-group label span { color: var(--accent); font-weight: 700; }
+  input[type="range"] {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--card-border);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  th {
+    background: #374151;
+    color: var(--text);
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 600;
+  }
+  td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--card-border);
+  }
+  tr:hover td { background: rgba(245, 158, 11, 0.08); }
+  .highlight-row td { background: rgba(245, 158, 11, 0.15); font-weight: 600; }
+  .heat-1 { background: rgba(239,68,68,0.15); }
+  .heat-2 { background: rgba(245,158,11,0.15); }
+  .heat-3 { background: rgba(16,185,129,0.15); }
+  .heat-4 { background: rgba(16,185,129,0.3); }
+  .chart-container { position: relative; height: 300px; }
+  .formula-box {
+    background: #0d1117;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    text-align: center;
+    margin: 16px 0;
+    color: var(--accent);
+  }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .tag-green { background: rgba(16,185,129,0.2); color: var(--green); }
+  .tag-amber { background: rgba(245,158,11,0.2); color: var(--accent); }
+  .tag-red { background: rgba(239,68,68,0.2); color: var(--red); }
+  .assumptions-list { list-style: none; }
+  .assumptions-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    justify-content: space-between;
+  }
+  .assumptions-list li:last-child { border-bottom: none; }
+  .assumptions-list .val { color: var(--accent); font-weight: 700; }
+  .source-note { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  .gap-bar {
+    height: 24px;
+    border-radius: 4px;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>OpenAI <span>ChatGPT</span> Ad Revenue Model</h1>
+  <p>$60 CPM | 25% Ad Frequency | Launched Feb 9, 2026</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-4" style="margin-bottom: 24px;">
+  <div class="card">
+    <h3>Annual Ad Revenue (US)</h3>
+    <div class="big-number" id="kpi-annual">$2.2B</div>
+    <div class="source-note">40M DAU, 10 msgs/day base</div>
+  </div>
+  <div class="card">
+    <h3>Daily Revenue</h3>
+    <div class="big-number blue" id="kpi-daily">$6.0M</div>
+    <div class="source-note">100M impressions/day</div>
+  </div>
+  <div class="card">
+    <h3>US Ad ARPU</h3>
+    <div class="big-number green" id="kpi-arpu">$54.75</div>
+    <div class="source-note">vs Meta $288 | Google $386</div>
+  </div>
+  <div class="card">
+    <h3>Global Potential (420M DAU)</h3>
+    <div class="big-number purple" id="kpi-global">$23.0B</div>
+    <div class="source-note">Full ad-eligible user base</div>
+  </div>
+</div>
+
+<div class="formula-box">
+  Annual Revenue = <strong>DAU</strong> &times; (<strong>Msgs/Day</strong> &times; <strong>25%</strong>) &times; (<strong>$60</strong> / 1000) &times; <strong>365</strong>
+</div>
+
+<!-- Interactive Controls + Assumptions -->
+<div class="section-title">Interactive Model</div>
+<div class="grid grid-2" style="margin-bottom: 24px;">
+  <div class="card">
+    <h3>Adjust Assumptions</h3>
+    <div class="slider-group">
+      <label>Ad-Eligible DAU <span id="lbl-dau">40M</span></label>
+      <input type="range" id="sl-dau" min="10" max="520" value="40" step="10">
+    </div>
+    <div class="slider-group">
+      <label>Messages / User / Day <span id="lbl-msgs">10</span></label>
+      <input type="range" id="sl-msgs" min="1" max="60" value="10">
+    </div>
+    <div class="slider-group">
+      <label>CPM ($) <span id="lbl-cpm">$60</span></label>
+      <input type="range" id="sl-cpm" min="10" max="150" value="60" step="5">
+    </div>
+    <div class="slider-group">
+      <label>Ad Frequency <span id="lbl-freq">25%</span></label>
+      <input type="range" id="sl-freq" min="5" max="80" value="25" step="5">
+    </div>
+    <div style="margin-top: 16px; padding: 12px; background: #0d1117; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Daily Impressions</span>
+        <span style="color: var(--accent); font-weight: 700;" id="calc-impr">100M</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Daily Revenue</span>
+        <span style="color: var(--accent); font-weight: 700;" id="calc-daily">$6.0M</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <span>Annual Revenue</span>
+        <span style="color: var(--accent); font-weight: 700; font-size: 1.3rem;" id="calc-annual">$2.2B</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span>ARPU (per user/year)</span>
+        <span style="color: var(--green); font-weight: 700;" id="calc-arpu">$54.75</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Fixed Assumptions</h3>
+    <ul class="assumptions-list">
+      <li><span>CPM (confirmed)</span><span class="val">$60</span></li>
+      <li><span>Ad Frequency</span><span class="val">25%</span></li>
+      <li><span>US Ad-Eligible DAU</span><span class="val">40M</span></li>
+      <li><span>Full Ad-Eligible DAU (81%)</span><span class="val">420M</span></li>
+      <li><span>Total DAU</span><span class="val">520M</span></li>
+      <li><span>Paid Subscribers</span><span class="val">~35M (19%)</span></li>
+      <li><span>WAU (Oct 2025)</span><span class="val">800M</span></li>
+      <li><span>2.6B msgs/day total</span><span class="val">~5 msgs/user avg</span></li>
+      <li><span>Free tier limit</span><span class="val">40-60 msgs/3hr</span></li>
+      <li><span>Ads in API?</span><span class="val">No</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ARPU Comparison Chart -->
+<div class="section-title">ARPU Comparison: ChatGPT vs Big Tech</div>
+<div class="grid grid-2" style="margin-bottom: 24px;">
+  <div class="card">
+    <div class="chart-container">
+      <canvas id="arpu-chart"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <h3>US/NA Annual Ad ARPU (FY 2025)</h3>
+    <table>
+      <thead><tr><th>Platform</th><th>ARPU</th><th>Ad Revenue</th></tr></thead>
+      <tbody>
+        <tr><td>Google (All Ads)</td><td>$504</td><td>~$307B</td></tr>
+        <tr><td>Google (Search)</td><td>$386</td><td>~$235B</td></tr>
+        <tr><td>Meta (NA)</td><td>$288</td><td>~$195B</td></tr>
+        <tr style="border-top: 2px solid var(--accent);">
+          <td><strong>ChatGPT @ 10 msgs</strong></td><td><strong>$55</strong></td><td><strong>$2.2B</strong></td>
+        </tr>
+        <tr><td>ChatGPT @ 20 msgs</td><td>$110</td><td>$4.4B</td></tr>
+        <tr><td>ChatGPT @ 30 msgs</td><td>$164</td><td>$6.6B</td></tr>
+        <tr><td>ChatGPT @ 50 msgs</td><td>$274</td><td>$11.0B</td></tr>
+      </tbody>
+    </table>
+    <div class="source-note" style="margin-top: 8px;">
+      Sources: Alphabet Q4 2025 earnings, Meta Q4 2025 earnings
+    </div>
+  </div>
+</div>
+
+<!-- Revenue Matrix (Messages x DAU) -->
+<div class="section-title">Revenue Matrix: Messages/Day vs DAU Scale ($B/year)</div>
+<div class="card" style="margin-bottom: 24px; overflow-x: auto;">
+  <table id="matrix-table">
+    <thead>
+      <tr>
+        <th>Msgs/Day</th>
+        <th>40M<br><small>US</small></th>
+        <th>80M<br><small>US+UK/CA</small></th>
+        <th>150M<br><small>+W.Europe</small></th>
+        <th>250M<br><small>+APAC</small></th>
+        <th>350M<br><small>+LatAm</small></th>
+        <th>420M<br><small>Ad-Eligible</small></th>
+        <th>520M<br><small>Full DAU</small></th>
+      </tr>
+    </thead>
+    <tbody id="matrix-body"></tbody>
+  </table>
+</div>
+
+<!-- Sensitivity by Messages -->
+<div class="section-title">Sensitivity: Messages/User/Day (US Only, 40M DAU)</div>
+<div class="grid grid-2" style="margin-bottom: 24px;">
+  <div class="card">
+    <div class="chart-container">
+      <canvas id="sensitivity-chart"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Msgs/Day</th><th>Impressions/Day</th><th>Annual Rev</th><th>ARPU</th></tr></thead>
+      <tbody id="sensitivity-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Infrastructure Gap -->
+<div class="section-title">The $1.15 Trillion Question: Infrastructure Gap</div>
+<div class="grid grid-2" style="margin-bottom: 24px;">
+  <div class="card">
+    <div class="chart-container" style="height: 350px;">
+      <canvas id="gap-chart"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Revenue vs Infrastructure Need (~$115B/yr)</h3>
+    <table>
+      <thead><tr><th>Stream</th><th>2025</th><th>2027E</th><th>2030E</th></tr></thead>
+      <tbody>
+        <tr><td>Subscriptions</td><td>$9B</td><td>$19B</td><td>$53B</td></tr>
+        <tr><td>API/Enterprise</td><td>$11B</td><td>$18B</td><td>$35B</td></tr>
+        <tr><td>Ads (global)</td><td>$0</td><td>$12B</td><td>$23B</td></tr>
+        <tr style="font-weight:700; color: var(--accent);">
+          <td>Total</td><td>$20B</td><td>$49B</td><td>$111B</td>
+        </tr>
+        <tr style="color: var(--red);">
+          <td>Gap to $115B</td><td>-$95B</td><td>-$66B</td><td>-$4B</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; font-size: 0.85rem;">
+      <strong style="color: var(--red);">Key Insight:</strong> Even with aggressive ad scaling,
+      OpenAI barely closes the infrastructure gap by 2030. Ads aren't a nice-to-have &mdash;
+      they're the missing ~$23B that makes the $1.15T bet viable.
+    </div>
+  </div>
+</div>
+
+<!-- Why Ads Section -->
+<div class="section-title">Why OpenAI Must Do Ads</div>
+<div class="card" style="margin-bottom: 24px;">
+  <div class="grid grid-3">
+    <div style="text-align: center; padding: 16px;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--red);">$1.15T</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">Infrastructure commitments<br>(2025-2035)</div>
+    </div>
+    <div style="text-align: center; padding: 16px;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">$53B</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">Max subscription revenue<br>(220M subs x $20/mo by 2030)</div>
+    </div>
+    <div style="text-align: center; padding: 16px;">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--green);">$23B+</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">Ad revenue potential<br>(global, at scale)</div>
+    </div>
+  </div>
+  <div style="margin-top: 16px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+    Subscriptions alone can't fund the infrastructure. Ads close the gap.
+  </div>
+</div>
+
+<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 24px 0; border-top: 1px solid var(--card-border);">
+  Model built Feb 9, 2026 | CPM=$60 (confirmed) | Ad Frequency=25% | Data sources: OpenAI, Alphabet Q4 2025, Meta Q4 2025
+</div>
+
+<script>
+const CPM = 60;
+const FREQ = 0.25;
+const DAU_US = 40;
+
+function fmt(n) {
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+  return '$' + n.toFixed(2);
+}
+
+function calcRevenue(dauM, msgs, freq, cpm) {
+  const dau = dauM * 1e6;
+  const effImpr = msgs * freq;
+  const dailyImpr = dau * effImpr;
+  const dailyRev = dailyImpr * cpm / 1000;
+  const annualRev = dailyRev * 365;
+  const arpu = annualRev / dau;
+  return { dailyImpr, dailyRev, annualRev, arpu, effImpr };
+}
+
+// ── Sliders ──
+const sliders = {
+  dau: document.getElementById('sl-dau'),
+  msgs: document.getElementById('sl-msgs'),
+  cpm: document.getElementById('sl-cpm'),
+  freq: document.getElementById('sl-freq'),
+};
+
+function updateCalc() {
+  const d = +sliders.dau.value;
+  const m = +sliders.msgs.value;
+  const c = +sliders.cpm.value;
+  const f = +sliders.freq.value / 100;
+
+  document.getElementById('lbl-dau').textContent = d + 'M';
+  document.getElementById('lbl-msgs').textContent = m;
+  document.getElementById('lbl-cpm').textContent = '$' + c;
+  document.getElementById('lbl-freq').textContent = f * 100 + '%';
+
+  const r = calcRevenue(d, m, f, c);
+  document.getElementById('calc-impr').textContent = (r.dailyImpr / 1e6).toFixed(0) + 'M';
+  document.getElementById('calc-daily').textContent = fmt(r.dailyRev);
+  document.getElementById('calc-annual').textContent = fmt(r.annualRev);
+  document.getElementById('calc-arpu').textContent = '$' + r.arpu.toFixed(2);
+
+  // Update KPIs
+  document.getElementById('kpi-annual').textContent = fmt(r.annualRev);
+  document.getElementById('kpi-daily').textContent = fmt(r.dailyRev);
+  document.getElementById('kpi-arpu').textContent = '$' + r.arpu.toFixed(2);
+  const globalR = calcRevenue(420, m, f, c);
+  document.getElementById('kpi-global').textContent = fmt(globalR.annualRev);
+}
+
+Object.values(sliders).forEach(s => s.addEventListener('input', updateCalc));
+
+// ── Revenue Matrix ──
+const dauList = [40, 80, 150, 250, 350, 420, 520];
+const msgsList = [5, 8, 10, 15, 20, 30, 50];
+
+function buildMatrix() {
+  const tbody = document.getElementById('matrix-body');
+  tbody.innerHTML = '';
+  msgsList.forEach(msgs => {
+    const tr = document.createElement('tr');
+    if (msgs === 10) tr.className = 'highlight-row';
+    const tdLabel = document.createElement('td');
+    tdLabel.textContent = msgs;
+    tdLabel.style.fontWeight = '600';
+    tr.appendChild(tdLabel);
+
+    dauList.forEach(d => {
+      const r = calcRevenue(d, msgs, FREQ, CPM);
+      const val = r.annualRev / 1e9;
+      const td = document.createElement('td');
+      td.textContent = '$' + val.toFixed(1) + 'B';
+      if (val < 5) td.className = 'heat-1';
+      else if (val < 15) td.className = 'heat-2';
+      else if (val < 30) td.className = 'heat-3';
+      else td.className = 'heat-4';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+buildMatrix();
+
+// ── Sensitivity Table ──
+const sensMsgs = [5, 8, 10, 12, 15, 20, 25, 30, 40, 50];
+function buildSensitivity() {
+  const tbody = document.getElementById('sensitivity-body');
+  tbody.innerHTML = '';
+  sensMsgs.forEach(msgs => {
+    const r = calcRevenue(DAU_US, msgs, FREQ, CPM);
+    const tr = document.createElement('tr');
+    if (msgs === 10) tr.className = 'highlight-row';
+    tr.innerHTML = `
+      <td>${msgs}</td>
+      <td>${(r.dailyImpr/1e6).toFixed(0)}M</td>
+      <td>${fmt(r.annualRev)}</td>
+      <td>$${r.arpu.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+buildSensitivity();
+
+// ── ARPU Chart ──
+new Chart(document.getElementById('arpu-chart'), {
+  type: 'bar',
+  data: {
+    labels: ['Google\n(All Ads)', 'Google\n(Search)', 'Meta\n(NA)', 'ChatGPT\n@10 msgs', 'ChatGPT\n@20 msgs', 'ChatGPT\n@30 msgs', 'ChatGPT\n@50 msgs'],
+    datasets: [{
+      label: 'US/NA ARPU ($/year)',
+      data: [504, 386, 288, 54.75, 109.50, 164.25, 273.75],
+      backgroundColor: ['#6b7280','#6b7280','#6b7280','#f59e0b','#f59e0b','#f59e0b','#f59e0b'],
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      title: { display: true, text: 'US/NA Annual Ad ARPU', color: '#e2e8f0', font: { size: 14 } }
+    },
+    scales: {
+      x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+      y: {
+        ticks: { color: '#94a3b8', callback: v => '$' + v },
+        grid: { color: 'rgba(148,163,184,0.1)' },
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+// ── Sensitivity Chart ──
+new Chart(document.getElementById('sensitivity-chart'), {
+  type: 'bar',
+  data: {
+    labels: sensMsgs.map(m => m + ' msgs'),
+    datasets: [{
+      label: 'Annual Revenue ($B)',
+      data: sensMsgs.map(m => calcRevenue(DAU_US, m, FREQ, CPM).annualRev / 1e9),
+      backgroundColor: sensMsgs.map(m => m === 10 ? '#f59e0b' : '#3b82f6'),
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      title: { display: true, text: 'Annual Revenue by Messages/Day (US 40M DAU)', color: '#e2e8f0', font: { size: 14 } }
+    },
+    scales: {
+      x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
+      y: {
+        ticks: { color: '#94a3b8', callback: v => '$' + v + 'B' },
+        grid: { color: 'rgba(148,163,184,0.1)' },
+        beginAtZero: true
+      }
+    }
+  }
+});
+
+// ── Infrastructure Gap Chart ──
+const years = ['2025', '2026E', '2027E', '2028E', '2030E'];
+new Chart(document.getElementById('gap-chart'), {
+  type: 'bar',
+  data: {
+    labels: years,
+    datasets: [
+      {
+        label: 'Subscriptions',
+        data: [9, 14, 19, 28, 53],
+        backgroundColor: '#3b82f6',
+        borderRadius: 4,
+      },
+      {
+        label: 'API/Enterprise',
+        data: [11, 14, 18, 25, 35],
+        backgroundColor: '#8b5cf6',
+        borderRadius: 4,
+      },
+      {
+        label: 'Ad Revenue',
+        data: [0, 1.6, 12, 23, 23],
+        backgroundColor: '#f59e0b',
+        borderRadius: 4,
+      },
+      {
+        label: 'Infrastructure Need',
+        data: [115, 115, 115, 115, 115],
+        type: 'line',
+        borderColor: '#ef4444',
+        borderWidth: 3,
+        borderDash: [8, 4],
+        pointRadius: 0,
+        fill: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#94a3b8' } },
+      title: { display: true, text: 'Revenue vs Infrastructure Commitments ($B)', color: '#e2e8f0', font: { size: 14 } }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: { color: '#94a3b8' },
+        grid: { display: false }
+      },
+      y: {
+        stacked: true,
+        ticks: { color: '#94a3b8', callback: v => '$' + v + 'B' },
+        grid: { color: 'rgba(148,163,184,0.1)' },
+        max: 130
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
