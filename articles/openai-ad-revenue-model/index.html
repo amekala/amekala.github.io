@@ -165,7 +165,7 @@
 
 <div class="header">
   <h1>OpenAI <span>ChatGPT</span> Ad Revenue Model</h1>
-  <p>$60 CPM | 25% Ad Frequency | Launched Feb 9, 2026</p>
+  <p>US: $60 CPM | Global Blended: $25 CPM | 25% Ad Frequency | Launched Feb 9, 2026</p>
 </div>
 
 <!-- KPI Cards -->
@@ -186,14 +186,14 @@
     <div class="source-note">vs Meta $288 | Google $386</div>
   </div>
   <div class="card">
-    <h3>Global Potential (420M DAU)</h3>
-    <div class="big-number purple" id="kpi-global">$23.0B</div>
-    <div class="source-note">Full ad-eligible user base</div>
+    <h3>Global Potential (420M DAU, $25 CPM)</h3>
+    <div class="big-number purple" id="kpi-global">$3.8B</div>
+    <div class="source-note">Blended CPM: US $60, EU $40, India $5</div>
   </div>
 </div>
 
 <div class="formula-box">
-  Annual Revenue = <strong>DAU</strong> &times; (<strong>Msgs/Day</strong> &times; <strong>25%</strong>) &times; (<strong>$60</strong> / 1000) &times; <strong>365</strong>
+  US: <strong>DAU</strong> &times; (<strong>Msgs/Day</strong> &times; <strong>25%</strong>) &times; (<strong>$60</strong> / 1000) &times; 365 &nbsp;|&nbsp; Global: DAU &times; (Msgs/Day &times; 25%) &times; (<strong>$25</strong> / 1000) &times; 365
 </div>
 
 <!-- Interactive Controls + Assumptions -->
@@ -239,15 +239,15 @@
   <div class="card">
     <h3>Fixed Assumptions</h3>
     <ul class="assumptions-list">
-      <li><span>CPM (confirmed)</span><span class="val">$60</span></li>
+      <li><span>US CPM (confirmed)</span><span class="val">$60</span></li>
+      <li><span>Blended Global CPM</span><span class="val">$25</span></li>
       <li><span>Ad Frequency</span><span class="val">25%</span></li>
       <li><span>US Ad-Eligible DAU</span><span class="val">40M</span></li>
       <li><span>Full Ad-Eligible DAU (81%)</span><span class="val">420M</span></li>
       <li><span>Total DAU</span><span class="val">520M</span></li>
+      <li><span>WAU / MAU (Oct 2025)</span><span class="val">800M+</span></li>
       <li><span>Paid Subscribers</span><span class="val">~35M (19%)</span></li>
-      <li><span>WAU (Oct 2025)</span><span class="val">800M</span></li>
       <li><span>2.6B msgs/day total</span><span class="val">~5 msgs/user avg</span></li>
-      <li><span>Free tier limit</span><span class="val">40-60 msgs/3hr</span></li>
       <li><span>Ads in API?</span><span class="val">No</span></li>
     </ul>
   </div>
@@ -328,25 +328,25 @@
     </div>
   </div>
   <div class="card">
-    <h3>Revenue vs Infrastructure Need (~$115B/yr)</h3>
+    <h3>Revenue vs Annual Cash Burn</h3>
     <table>
-      <thead><tr><th>Stream</th><th>2025</th><th>2027E</th><th>2030E</th></tr></thead>
+      <thead><tr><th>Metric</th><th>2025</th><th>2027E</th><th>2030E</th></tr></thead>
       <tbody>
-        <tr><td>Subscriptions</td><td>$9B</td><td>$19B</td><td>$53B</td></tr>
-        <tr><td>API/Enterprise</td><td>$11B</td><td>$18B</td><td>$35B</td></tr>
-        <tr><td>Ads (global)</td><td>$0</td><td>$12B</td><td>$23B</td></tr>
+        <tr><td>Revenue (subs+API)</td><td>$20B</td><td>$37B</td><td>$88B</td></tr>
+        <tr><td>Ad Revenue (global, $25 CPM)</td><td>$0</td><td>$4B</td><td>$8B</td></tr>
         <tr style="font-weight:700; color: var(--accent);">
-          <td>Total</td><td>$20B</td><td>$49B</td><td>$111B</td>
+          <td>Total Revenue</td><td>$20B</td><td>$41B</td><td>$96B</td>
         </tr>
+        <tr><td>Costs (OpEx+CapEx)</td><td>$28B</td><td>$77B</td><td>TBD</td></tr>
         <tr style="color: var(--red);">
-          <td>Gap to $115B</td><td>-$95B</td><td>-$66B</td><td>-$4B</td>
+          <td>Cash Burn</td><td>-$8B</td><td>-$35B</td><td>Breakeven target</td>
         </tr>
       </tbody>
     </table>
     <div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; font-size: 0.85rem;">
-      <strong style="color: var(--red);">Key Insight:</strong> Even with aggressive ad scaling,
-      OpenAI barely closes the infrastructure gap by 2030. Ads aren't a nice-to-have &mdash;
-      they're the missing ~$23B that makes the $1.15T bet viable.
+      <strong style="color: var(--red);">Key Insight:</strong> OpenAI burns $17B in 2026, scaling to $35B+ by 2027.
+      The $1.15T headline is a JV &mdash; OpenAI's equity is $19B, partners fund the rest.
+      But the annual cash burn is real, and ads directly reduce it.
     </div>
   </div>
 </div>
@@ -356,25 +356,25 @@
 <div class="card" style="margin-bottom: 24px;">
   <div class="grid grid-3">
     <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--red);">$1.15T</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">Infrastructure commitments<br>(2025-2035)</div>
+      <div style="font-size: 2rem; font-weight: 800; color: var(--red);">$115B</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">Cumulative cash burn<br>through 2029</div>
     </div>
     <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">$53B</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">Max subscription revenue<br>(220M subs x $20/mo by 2030)</div>
+      <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">$19B</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">OpenAI's Stargate equity<br>(partners fund the rest of $500B)</div>
     </div>
     <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--green);">$23B+</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">Ad revenue potential<br>(global, at scale)</div>
+      <div style="font-size: 2rem; font-weight: 800; color: var(--green);">$4-8B</div>
+      <div style="color: var(--text-muted); font-size: 0.85rem;">Ad revenue potential<br>(global, $25 blended CPM)</div>
     </div>
   </div>
   <div style="margin-top: 16px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-    Subscriptions alone can't fund the infrastructure. Ads close the gap.
+    OpenAI burns $17B in 2026. Every $1B in ad revenue directly reduces that burn.
   </div>
 </div>
 
 <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 24px 0; border-top: 1px solid var(--card-border);">
-  Model built Feb 9, 2026 | CPM=$60 (confirmed) | Ad Frequency=25% | Data sources: OpenAI, Alphabet Q4 2025, Meta Q4 2025
+  Model built Feb 9, 2026 | US CPM=$60 (confirmed) | Global blended CPM=$25 | Ad Frequency=25% | Data: OpenAI, Alphabet Q4 2025, Meta Q4 2025
 </div>
 
 <script>
@@ -428,7 +428,8 @@ function updateCalc() {
   document.getElementById('kpi-annual').textContent = fmt(r.annualRev);
   document.getElementById('kpi-daily').textContent = fmt(r.dailyRev);
   document.getElementById('kpi-arpu').textContent = '$' + r.arpu.toFixed(2);
-  const globalR = calcRevenue(420, m, f, c);
+  const globalCpm = 25; // blended global CPM
+  const globalR = calcRevenue(420, m, f, globalCpm);
   document.getElementById('kpi-global').textContent = fmt(globalR.annualRev);
 }
 
@@ -565,19 +566,20 @@ new Chart(document.getElementById('gap-chart'), {
         borderRadius: 4,
       },
       {
-        label: 'Ad Revenue',
-        data: [0, 1.6, 12, 23, 23],
+        label: 'Ad Revenue ($25 blended CPM)',
+        data: [0, 1.0, 4, 8, 8],
         backgroundColor: '#f59e0b',
         borderRadius: 4,
       },
       {
-        label: 'Infrastructure Need',
-        data: [115, 115, 115, 115, 115],
+        label: 'Annual Cash Burn (costs)',
+        data: [28, 45, 77, 111, 96],
         type: 'line',
         borderColor: '#ef4444',
         borderWidth: 3,
         borderDash: [8, 4],
-        pointRadius: 0,
+        pointRadius: 4,
+        pointBackgroundColor: '#ef4444',
         fill: false,
       }
     ]
@@ -587,7 +589,7 @@ new Chart(document.getElementById('gap-chart'), {
     maintainAspectRatio: false,
     plugins: {
       legend: { labels: { color: '#94a3b8' } },
-      title: { display: true, text: 'Revenue vs Infrastructure Commitments ($B)', color: '#e2e8f0', font: { size: 14 } }
+      title: { display: true, text: 'Revenue vs Annual Costs ($B)', color: '#e2e8f0', font: { size: 14 } }
     },
     scales: {
       x: {
@@ -599,7 +601,7 @@ new Chart(document.getElementById('gap-chart'), {
         stacked: true,
         ticks: { color: '#94a3b8', callback: v => '$' + v + 'B' },
         grid: { color: 'rgba(148,163,184,0.1)' },
-        max: 130
+        max: 140
       }
     }
   }
