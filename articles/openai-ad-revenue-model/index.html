@@ -3,609 +3,577 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenAI ChatGPT Ad Revenue Model</title>
+<title>ChatGPT Ad Revenue Model — Market Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --card-border: #334155;
-    --text: #e2e8f0;
-    --text-muted: #94a3b8;
-    --accent: #f59e0b;
-    --accent2: #3b82f6;
-    --green: #10b981;
-    --red: #ef4444;
-    --purple: #8b5cf6;
+    --bg: #0f172a; --card: #1e293b; --card-border: #334155;
+    --text: #e2e8f0; --text-muted: #94a3b8;
+    --accent: #f59e0b; --blue: #3b82f6; --green: #10b981;
+    --red: #ef4444; --purple: #8b5cf6; --cyan: #06b6d4;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 24px;
-    min-height: 100vh;
+    background: var(--bg); color: var(--text);
+    padding: 32px; min-height: 100vh; max-width: 1200px; margin: 0 auto;
   }
-  .header {
-    text-align: center;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--card-border);
-  }
-  .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  .header { text-align: center; margin-bottom: 20px; }
+  .header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
   .header h1 span { color: var(--accent); }
-  .header p { color: var(--text-muted); font-size: 0.95rem; }
-  .grid { display: grid; gap: 20px; }
-  .grid-2 { grid-template-columns: 1fr 1fr; }
-  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 20px;
+  .header .sub { color: var(--text-muted); font-size: 0.9rem; }
+  .card { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 20px; }
+  .stitle { font-size: 1.05rem; font-weight: 700; margin: 28px 0 14px; padding-left: 12px; border-left: 4px solid var(--accent); }
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 900px) { .g2,.g3 { grid-template-columns: 1fr; } body { padding: 16px; } }
+
+  .tab-bar { display: flex; gap: 0; margin-bottom: 18px; justify-content: center; }
+  .tab-btn {
+    padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+    background: var(--card); color: var(--text-muted); border: 1px solid var(--card-border);
+    transition: all 0.15s;
   }
-  .card h3 {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-  }
-  .big-number {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: var(--accent);
-    line-height: 1.1;
-  }
-  .big-number.blue { color: var(--accent2); }
-  .big-number.green { color: var(--green); }
-  .big-number.purple { color: var(--purple); }
-  .big-number small { font-size: 0.5em; color: var(--text-muted); font-weight: 400; }
-  .section-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin: 32px 0 16px;
-    padding-left: 12px;
-    border-left: 4px solid var(--accent);
-  }
-  .slider-group { margin-bottom: 16px; }
-  .slider-group label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 0.9rem;
-  }
+  .tab-btn:first-child { border-radius: 8px 0 0 8px; }
+  .tab-btn:last-child { border-radius: 0 8px 8px 0; }
+  .tab-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+
+  .kpi { text-align: center; padding: 14px 8px; }
+  .kpi-val { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+  .kpi-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 4px; }
+  .kpi-note { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+
+  .insight { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 12px 18px; font-size: 0.88rem; line-height: 1.5; margin-top: 14px; }
+
+  .slider-group { margin-bottom: 12px; }
+  .slider-group label { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 0.84rem; }
   .slider-group label span { color: var(--accent); font-weight: 700; }
-  input[type="range"] {
-    width: 100%;
-    height: 6px;
-    -webkit-appearance: none;
-    background: var(--card-border);
-    border-radius: 3px;
-    outline: none;
-  }
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-  }
-  th {
-    background: #374151;
-    color: var(--text);
-    padding: 10px 8px;
-    text-align: center;
-    font-weight: 600;
-  }
-  td {
-    padding: 8px;
-    text-align: center;
-    border-bottom: 1px solid var(--card-border);
-  }
-  tr:hover td { background: rgba(245, 158, 11, 0.08); }
-  .highlight-row td { background: rgba(245, 158, 11, 0.15); font-weight: 600; }
-  .heat-1 { background: rgba(239,68,68,0.15); }
-  .heat-2 { background: rgba(245,158,11,0.15); }
-  .heat-3 { background: rgba(16,185,129,0.15); }
-  .heat-4 { background: rgba(16,185,129,0.3); }
-  .chart-container { position: relative; height: 300px; }
-  .formula-box {
-    background: #0d1117;
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    padding: 16px;
-    font-family: 'Fira Code', monospace;
-    font-size: 0.95rem;
-    text-align: center;
-    margin: 16px 0;
-    color: var(--accent);
-  }
-  .tag {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  .tag-green { background: rgba(16,185,129,0.2); color: var(--green); }
-  .tag-amber { background: rgba(245,158,11,0.2); color: var(--accent); }
-  .tag-red { background: rgba(239,68,68,0.2); color: var(--red); }
-  .assumptions-list { list-style: none; }
-  .assumptions-list li {
-    padding: 8px 0;
-    border-bottom: 1px solid var(--card-border);
-    display: flex;
-    justify-content: space-between;
-  }
-  .assumptions-list li:last-child { border-bottom: none; }
-  .assumptions-list .val { color: var(--accent); font-weight: 700; }
-  .source-note { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
-  .gap-bar {
-    height: 24px;
-    border-radius: 4px;
-    margin: 4px 0;
-    display: flex;
-    align-items: center;
-    padding-left: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-  }
+  input[type="range"] { width: 100%; height: 5px; -webkit-appearance: none; background: var(--card-border); border-radius: 3px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  th { background: #374151; color: var(--text); padding: 7px 5px; text-align: center; font-weight: 600; font-size: 0.75rem; }
+  td { padding: 6px 5px; text-align: center; border-bottom: 1px solid var(--card-border); }
+  .hl td { background: rgba(245,158,11,0.08); font-weight: 600; }
+
+  .chart-box { position: relative; height: 300px; }
+
+  .sc { background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; text-align: center; }
+  .sc.base { border-color: var(--accent); }
+  .sc h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+  .sc-val { font-size: 1.7rem; font-weight: 800; margin-bottom: 4px; }
+  .sc-det { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+
+  .treadmill { display: flex; align-items: center; gap: 24px; margin-bottom: 8px; flex-wrap: wrap; }
+  .treadmill-item { text-align: center; flex: 1; min-width: 80px; }
+  .treadmill-arrow { color: var(--accent); font-size: 1.5rem; font-weight: 800; }
+  .tm-year { font-size: 0.72rem; color: var(--text-muted); }
+  .tm-rev { font-size: 1.1rem; font-weight: 700; color: var(--green); }
+
+  .formula { background: #0d1117; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 14px; font-family: monospace; font-size: 0.82rem; text-align: center; color: var(--accent); margin-top: 10px; }
+  .src { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; }
+  .alist { list-style: none; font-size: 0.8rem; }
+  .alist li { padding: 5px 0; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; }
+  .alist li:last-child { border-bottom: none; }
+  .alist .v { color: var(--accent); font-weight: 700; }
+
+  .profit-box { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 14px 18px; font-size: 0.85rem; line-height: 1.6; margin-top: 12px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>OpenAI <span>ChatGPT</span> Ad Revenue Model</h1>
-  <p>US: $60 CPM | Global Blended: $25 CPM | 25% Ad Frequency | Launched Feb 9, 2026</p>
+  <h1><span>ChatGPT</span> Ad Revenue Model</h1>
+  <div class="sub">Market Analysis | February 2026</div>
 </div>
 
-<!-- KPI Cards -->
-<div class="grid grid-4" style="margin-bottom: 24px;">
-  <div class="card">
-    <h3>Annual Ad Revenue (US)</h3>
-    <div class="big-number" id="kpi-annual">$2.2B</div>
-    <div class="source-note">40M DAU, 10 msgs/day base</div>
+<!-- US / Global Toggle -->
+<div class="tab-bar">
+  <div class="tab-btn active" id="tab-us" onclick="setScope('us')">US Only</div>
+  <div class="tab-btn" id="tab-global" onclick="setScope('global')">Global (incl. US)</div>
+</div>
+
+<!-- KPIs -->
+<div class="card" style="margin-bottom: 20px;">
+  <div class="grid g3">
+    <div class="kpi">
+      <div class="kpi-lbl">Year 1 Projected (2026)</div>
+      <div class="kpi-val" style="color:var(--blue);" id="k-yr1">$0.5B</div>
+      <div class="kpi-note" id="k-yr1-note">US ad revenue</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl" id="k-28-lbl">2028E Ad Revenue</div>
+      <div class="kpi-val" style="color:var(--green);" id="k-28">$3.6B</div>
+      <div class="kpi-note" id="k-28-note">Annual, with user growth</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">US Ad ARPU</div>
+      <div class="kpi-val" style="color:var(--purple);" id="k-arpu">$137</div>
+      <div class="kpi-note">vs Meta $288 | Google $386</div>
+    </div>
   </div>
+  <div class="insight" id="insight"></div>
+</div>
+
+<!-- Interactive Model + Financial Impact -->
+<div class="stitle">Interactive Model</div>
+<div class="grid g2" style="margin-bottom: 20px;">
   <div class="card">
-    <h3>Daily Revenue</h3>
-    <div class="big-number blue" id="kpi-daily">$6.0M</div>
-    <div class="source-note">100M impressions/day</div>
+    <div class="slider-group">
+      <label>Messages / User / Day <span id="l-msgs">25</span></label>
+      <input type="range" id="s-msgs" min="5" max="60" value="25">
+    </div>
+    <div class="slider-group">
+      <label>Ad Frequency <span id="l-freq">25%</span></label>
+      <input type="range" id="s-freq" min="5" max="80" value="25" step="5">
+    </div>
+    <div class="slider-group">
+      <label>US CPM ($) <span id="l-cpm">$60</span></label>
+      <input type="range" id="s-cpm" min="20" max="150" value="60" step="5">
+    </div>
+    <div class="formula">
+      DAU &times; (Msgs &times; Freq) &times; (CPM / 1000) &times; 365
+    </div>
+
+    <div style="margin-top: 14px;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;">Fill Rate (Advertiser Demand Ramp)</div>
+      <table style="font-size: 0.75rem;">
+        <thead><tr><th></th><th>2026</th><th>2027</th><th>2028</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">US Fill Rate</td><td style="color:var(--accent);">10%</td><td style="color:var(--accent);">30%</td><td style="color:var(--accent);">50%</td></tr>
+          <tr><td style="text-align:left;">RoW Fill Rate</td><td style="color:var(--cyan);">0%</td><td style="color:var(--cyan);">10%</td><td style="color:var(--cyan);">25%</td></tr>
+        </tbody>
+      </table>
+      <div class="src">Fill rate = % of available ad slots filled by advertisers. Year 1: limited demand ($200K min buy), new format, few advertisers. Grows as market matures.</div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;">DAU Growth (Ad-Eligible Users)</div>
+      <table style="font-size: 0.75rem;">
+        <thead><tr><th></th><th>2026</th><th>2027</th><th>2028</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left;">US DAU</td><td style="color:var(--accent);">40M</td><td style="color:var(--accent);">48M</td><td style="color:var(--accent);">58M</td></tr>
+          <tr><td style="text-align:left;">RoW DAU</td><td style="color:var(--cyan);">380M</td><td style="color:var(--cyan);">475M</td><td style="color:var(--cyan);">594M</td></tr>
+        </tbody>
+      </table>
+      <div class="src">US: ~20% YoY growth. RoW: ~25% YoY (global expansion). Base: 800M WAU (2025) → 2.6B WAU target by 2030. Free/Go tier (~81%) are ad-eligible.</div>
+    </div>
   </div>
-  <div class="card">
-    <h3>US Ad ARPU</h3>
-    <div class="big-number green" id="kpi-arpu">$54.75</div>
-    <div class="source-note">vs Meta $288 | Google $386</div>
-  </div>
-  <div class="card">
-    <h3>Global Potential (420M DAU, $25 CPM)</h3>
-    <div class="big-number purple" id="kpi-global">$3.8B</div>
-    <div class="source-note">Blended CPM: US $60, EU $40, India $5</div>
+
+  <div class="card" style="overflow-x: auto;">
+    <h3 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 10px;">Financial Impact ($B)</h3>
+    <table id="fin-table">
+      <thead id="fin-head"></thead>
+      <tbody id="fin-body"></tbody>
+    </table>
+    <div class="src" style="margin-top: 6px;">
+      2025 split: ~60% subs / ~40% API. API added $1B ARR in Jan 2026.<br>
+      Cost projections: Fortune leaked financial docs. Includes compute, R&D, CapEx from infrastructure deals.
+    </div>
   </div>
 </div>
 
-<div class="formula-box">
-  US: <strong>DAU</strong> &times; (<strong>Msgs/Day</strong> &times; <strong>25%</strong>) &times; (<strong>$60</strong> / 1000) &times; 365 &nbsp;|&nbsp; Global: DAU &times; (Msgs/Day &times; 25%) &times; (<strong>$25</strong> / 1000) &times; 365
+<!-- Ad Revenue Ramp (zoomed in) -->
+<div class="stitle">Ad Revenue Ramp</div>
+<div class="card" style="margin-bottom: 20px;">
+  <div class="chart-box" style="height: 260px;"><canvas id="ad-chart"></canvas></div>
 </div>
 
-<!-- Interactive Controls + Assumptions -->
-<div class="section-title">Interactive Model</div>
-<div class="grid grid-2" style="margin-bottom: 24px;">
-  <div class="card">
-    <h3>Adjust Assumptions</h3>
-    <div class="slider-group">
-      <label>Ad-Eligible DAU <span id="lbl-dau">40M</span></label>
-      <input type="range" id="sl-dau" min="10" max="520" value="40" step="10">
-    </div>
-    <div class="slider-group">
-      <label>Messages / User / Day <span id="lbl-msgs">10</span></label>
-      <input type="range" id="sl-msgs" min="1" max="60" value="10">
-    </div>
-    <div class="slider-group">
-      <label>CPM ($) <span id="lbl-cpm">$60</span></label>
-      <input type="range" id="sl-cpm" min="10" max="150" value="60" step="5">
-    </div>
-    <div class="slider-group">
-      <label>Ad Frequency <span id="lbl-freq">25%</span></label>
-      <input type="range" id="sl-freq" min="5" max="80" value="25" step="5">
-    </div>
-    <div style="margin-top: 16px; padding: 12px; background: #0d1117; border-radius: 8px;">
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>Daily Impressions</span>
-        <span style="color: var(--accent); font-weight: 700;" id="calc-impr">100M</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>Daily Revenue</span>
-        <span style="color: var(--accent); font-weight: 700;" id="calc-daily">$6.0M</span>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-        <span>Annual Revenue</span>
-        <span style="color: var(--accent); font-weight: 700; font-size: 1.3rem;" id="calc-annual">$2.2B</span>
-      </div>
-      <div style="display: flex; justify-content: space-between;">
-        <span>ARPU (per user/year)</span>
-        <span style="color: var(--green); font-weight: 700;" id="calc-arpu">$54.75</span>
-      </div>
+<!-- Revenue vs Costs (full picture) -->
+<div class="stitle">Total Revenue vs Costs</div>
+<div class="card" style="margin-bottom: 20px;">
+  <div class="chart-box"><canvas id="rev-chart"></canvas></div>
+</div>
+
+<!-- Path to Profitability -->
+<div class="stitle">Path to Profitability (2030 Target)</div>
+<div class="card" style="margin-bottom: 20px;">
+  <div class="treadmill">
+    <div class="treadmill-item"><div class="tm-year">2023</div><div class="tm-rev">$2B revenue</div></div>
+    <div class="treadmill-arrow">&rarr;</div>
+    <div class="treadmill-item"><div class="tm-year">2024</div><div class="tm-rev">$6B revenue</div></div>
+    <div class="treadmill-arrow">&rarr;</div>
+    <div class="treadmill-item"><div class="tm-year">2025</div><div class="tm-rev">$20B revenue</div></div>
+    <div class="treadmill-arrow">&rarr;</div>
+    <div class="treadmill-item" style="border-left: 2px solid var(--red); padding-left: 16px;">
+      <div style="font-size: 0.95rem; font-weight: 700; color: var(--red);">-$8B cash burn</div>
+      <div style="font-size: 0.72rem; color: var(--text-muted);">Every dollar goes back to compute</div>
     </div>
   </div>
-  <div class="card">
-    <h3>Fixed Assumptions</h3>
-    <ul class="assumptions-list">
-      <li><span>US CPM (confirmed)</span><span class="val">$60</span></li>
-      <li><span>Blended Global CPM</span><span class="val">$25</span></li>
-      <li><span>Ad Frequency</span><span class="val">25%</span></li>
-      <li><span>US Ad-Eligible DAU</span><span class="val">40M</span></li>
-      <li><span>Full Ad-Eligible DAU (81%)</span><span class="val">420M</span></li>
-      <li><span>Total DAU</span><span class="val">520M</span></li>
-      <li><span>WAU / MAU (Oct 2025)</span><span class="val">800M+</span></li>
-      <li><span>Paid Subscribers</span><span class="val">~35M (19%)</span></li>
-      <li><span>2.6B msgs/day total</span><span class="val">~5 msgs/user avg</span></li>
-      <li><span>Ads in API?</span><span class="val">No</span></li>
-    </ul>
+  <div class="profit-box" id="profit-box">
+    Loading...
+  </div>
+  <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">
+    Revenue tripled every year — and they still lost $8B in 2025. If they stop investing, a better model wins and users leave.
+    <strong style="color: var(--text);">This is not a cost optimization problem. It's an arms race.</strong>
+    The path to profitability requires massive user growth (800M → 2.6B WAU by 2030), which in turn grows both subscriptions AND ad revenue.
   </div>
 </div>
 
-<!-- ARPU Comparison Chart -->
-<div class="section-title">ARPU Comparison: ChatGPT vs Big Tech</div>
-<div class="grid grid-2" style="margin-bottom: 24px;">
+<!-- ARPU Benchmarks -->
+<div class="stitle">ARPU Benchmarks</div>
+<div class="grid g2" style="margin-bottom: 20px;">
   <div class="card">
-    <div class="chart-container">
-      <canvas id="arpu-chart"></canvas>
-    </div>
+    <div class="chart-box" style="height: 260px;"><canvas id="arpu-chart"></canvas></div>
   </div>
   <div class="card">
-    <h3>US/NA Annual Ad ARPU (FY 2025)</h3>
+    <h3 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 10px;">US/NA Annual Ad ARPU (FY 2025)</h3>
     <table>
-      <thead><tr><th>Platform</th><th>ARPU</th><th>Ad Revenue</th></tr></thead>
+      <thead><tr><th>Platform</th><th>ARPU</th><th>Revenue</th></tr></thead>
       <tbody>
         <tr><td>Google (All Ads)</td><td>$504</td><td>~$307B</td></tr>
         <tr><td>Google (Search)</td><td>$386</td><td>~$235B</td></tr>
         <tr><td>Meta (NA)</td><td>$288</td><td>~$195B</td></tr>
-        <tr style="border-top: 2px solid var(--accent);">
-          <td><strong>ChatGPT @ 10 msgs</strong></td><td><strong>$55</strong></td><td><strong>$2.2B</strong></td>
-        </tr>
-        <tr><td>ChatGPT @ 20 msgs</td><td>$110</td><td>$4.4B</td></tr>
-        <tr><td>ChatGPT @ 30 msgs</td><td>$164</td><td>$6.6B</td></tr>
-        <tr><td>ChatGPT @ 50 msgs</td><td>$274</td><td>$11.0B</td></tr>
+        <tr class="hl"><td><strong>ChatGPT</strong></td><td id="arpu-td"><strong>$137</strong></td><td id="arpu-rev-td"><strong>$5.5B</strong></td></tr>
       </tbody>
     </table>
-    <div class="source-note" style="margin-top: 8px;">
-      Sources: Alphabet Q4 2025 earnings, Meta Q4 2025 earnings
+    <div class="src" style="margin-top: 6px;">Alphabet Q4 2025, Meta Q4 2025 earnings. ChatGPT shows US annual potential at current slider assumptions.</div>
+  </div>
+</div>
+
+<!-- Scenario Analysis -->
+<div class="stitle" id="sc-title">Scenario Analysis (US, 2028E Annual)</div>
+<div class="grid g3" style="margin-bottom: 20px;">
+  <div class="sc" id="sc-con">
+    <h4>Conservative</h4>
+    <div class="sc-val" style="color:var(--text-muted);" id="sc-c-val">$0</div>
+    <div class="sc-det">
+      <div>15 msgs/day | 20% freq</div>
+      <div id="sc-c-d1">58M DAU | 50% fill</div>
+      <div id="sc-c-d2">ARPU: $66</div>
+    </div>
+  </div>
+  <div class="sc base" id="sc-base">
+    <h4 style="color:var(--accent);">Base Case</h4>
+    <div class="sc-val" style="color:var(--accent);" id="sc-b-val">$0</div>
+    <div class="sc-det">
+      <div>25 msgs/day | 25% freq</div>
+      <div id="sc-b-d1">58M DAU | 50% fill</div>
+      <div id="sc-b-d2">ARPU: $137</div>
+    </div>
+  </div>
+  <div class="sc" id="sc-opt">
+    <h4>Optimistic</h4>
+    <div class="sc-val" style="color:var(--green);" id="sc-o-val">$0</div>
+    <div class="sc-det">
+      <div>40 msgs/day | 35% freq</div>
+      <div id="sc-o-d1">58M DAU | 50% fill</div>
+      <div id="sc-o-d2">ARPU: $307</div>
     </div>
   </div>
 </div>
 
-<!-- Revenue Matrix (Messages x DAU) -->
-<div class="section-title">Revenue Matrix: Messages/Day vs DAU Scale ($B/year)</div>
-<div class="card" style="margin-bottom: 24px; overflow-x: auto;">
-  <table id="matrix-table">
-    <thead>
-      <tr>
-        <th>Msgs/Day</th>
-        <th>40M<br><small>US</small></th>
-        <th>80M<br><small>US+UK/CA</small></th>
-        <th>150M<br><small>+W.Europe</small></th>
-        <th>250M<br><small>+APAC</small></th>
-        <th>350M<br><small>+LatAm</small></th>
-        <th>420M<br><small>Ad-Eligible</small></th>
-        <th>520M<br><small>Full DAU</small></th>
-      </tr>
-    </thead>
-    <tbody id="matrix-body"></tbody>
-  </table>
-</div>
-
-<!-- Sensitivity by Messages -->
-<div class="section-title">Sensitivity: Messages/User/Day (US Only, 40M DAU)</div>
-<div class="grid grid-2" style="margin-bottom: 24px;">
+<!-- Key Context -->
+<div class="stitle">Key Context</div>
+<div class="grid g2" style="margin-bottom: 20px;">
   <div class="card">
-    <div class="chart-container">
-      <canvas id="sensitivity-chart"></canvas>
-    </div>
+    <h3 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 10px;">Why 25 msgs/day baseline</h3>
+    <ul class="alist">
+      <li><span>Free tier message caps removed with ads</span></li>
+      <li><span>ChatGPT drives engagement ("Would you like me to...")</span></li>
+      <li><span>Multi-turn conversations are the norm</span></li>
+      <li><span>Previous cap: 40-60 msgs per 3-hour window</span></li>
+      <li><span>2.6B total daily msgs / 520M DAU = ~5 avg (incl. paid)</span></li>
+    </ul>
   </div>
   <div class="card">
-    <table>
-      <thead><tr><th>Msgs/Day</th><th>Impressions/Day</th><th>Annual Rev</th><th>ARPU</th></tr></thead>
-      <tbody id="sensitivity-body"></tbody>
-    </table>
+    <h3 style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 10px;">Infrastructure Deals</h3>
+    <ul class="alist">
+      <li><span>Stargate JV ($500B total)</span><span class="v">OpenAI: $19B (40%)</span></li>
+      <li><span>SoftBank</span><span class="v">$19B equity</span></li>
+      <li><span>Oracle + MGX</span><span class="v">$14B equity</span></li>
+      <li><span>Debt / vendor financing</span><span class="v">$448B (90%)</span></li>
+      <li><span>These costs are IN the model</span><span class="v" style="color:var(--green);">Included</span></li>
+      <li><span>Profitability target</span><span class="v">2030</span></li>
+    </ul>
   </div>
 </div>
 
-<!-- Infrastructure Gap -->
-<div class="section-title">The $1.15 Trillion Question: Infrastructure Gap</div>
-<div class="grid grid-2" style="margin-bottom: 24px;">
-  <div class="card">
-    <div class="chart-container" style="height: 350px;">
-      <canvas id="gap-chart"></canvas>
-    </div>
-  </div>
-  <div class="card">
-    <h3>Revenue vs Annual Cash Burn</h3>
-    <table>
-      <thead><tr><th>Metric</th><th>2025</th><th>2027E</th><th>2030E</th></tr></thead>
-      <tbody>
-        <tr><td>Revenue (subs+API)</td><td>$20B</td><td>$37B</td><td>$88B</td></tr>
-        <tr><td>Ad Revenue (global, $25 CPM)</td><td>$0</td><td>$4B</td><td>$8B</td></tr>
-        <tr style="font-weight:700; color: var(--accent);">
-          <td>Total Revenue</td><td>$20B</td><td>$41B</td><td>$96B</td>
-        </tr>
-        <tr><td>Costs (OpEx+CapEx)</td><td>$28B</td><td>$77B</td><td>TBD</td></tr>
-        <tr style="color: var(--red);">
-          <td>Cash Burn</td><td>-$8B</td><td>-$35B</td><td>Breakeven target</td>
-        </tr>
-      </tbody>
-    </table>
-    <div style="margin-top: 16px; padding: 12px; background: rgba(239,68,68,0.1); border-radius: 8px; font-size: 0.85rem;">
-      <strong style="color: var(--red);">Key Insight:</strong> OpenAI burns $17B in 2026, scaling to $35B+ by 2027.
-      The $1.15T headline is a JV &mdash; OpenAI's equity is $19B, partners fund the rest.
-      But the annual cash burn is real, and ads directly reduce it.
-    </div>
-  </div>
-</div>
-
-<!-- Why Ads Section -->
-<div class="section-title">Why OpenAI Must Do Ads</div>
-<div class="card" style="margin-bottom: 24px;">
-  <div class="grid grid-3">
-    <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--red);">$115B</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">Cumulative cash burn<br>through 2029</div>
-    </div>
-    <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">$19B</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">OpenAI's Stargate equity<br>(partners fund the rest of $500B)</div>
-    </div>
-    <div style="text-align: center; padding: 16px;">
-      <div style="font-size: 2rem; font-weight: 800; color: var(--green);">$4-8B</div>
-      <div style="color: var(--text-muted); font-size: 0.85rem;">Ad revenue potential<br>(global, $25 blended CPM)</div>
-    </div>
-  </div>
-  <div style="margin-top: 16px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-    OpenAI burns $17B in 2026. Every $1B in ad revenue directly reduces that burn.
-  </div>
-</div>
-
-<div style="text-align: center; color: var(--text-muted); font-size: 0.8rem; padding: 24px 0; border-top: 1px solid var(--card-border);">
-  Model built Feb 9, 2026 | US CPM=$60 (confirmed) | Global blended CPM=$25 | Ad Frequency=25% | Data: OpenAI, Alphabet Q4 2025, Meta Q4 2025
+<div style="text-align:center; color:var(--text-muted); font-size:0.72rem; padding:20px 0; border-top:1px solid var(--card-border);">
+  Model built Feb 9, 2026 | Data: OpenAI CFO blog, Alphabet Q4 2025, Meta Q4 2025, Fortune | CPM, frequency, fill rate, and DAU growth are model assumptions
 </div>
 
 <script>
-const CPM = 60;
-const FREQ = 0.25;
-const DAU_US = 40;
-
-function fmt(n) {
-  if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
-  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
-  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
-  return '$' + n.toFixed(2);
-}
-
-function calcRevenue(dauM, msgs, freq, cpm) {
-  const dau = dauM * 1e6;
-  const effImpr = msgs * freq;
-  const dailyImpr = dau * effImpr;
-  const dailyRev = dailyImpr * cpm / 1000;
-  const annualRev = dailyRev * 365;
-  const arpu = annualRev / dau;
-  return { dailyImpr, dailyRev, annualRev, arpu, effImpr };
-}
-
-// ── Sliders ──
-const sliders = {
-  dau: document.getElementById('sl-dau'),
-  msgs: document.getElementById('sl-msgs'),
-  cpm: document.getElementById('sl-cpm'),
-  freq: document.getElementById('sl-freq'),
+const FIN = {
+  2025: { subs: 12, api: 8, costs: 28 },
+  2026: { subs: 15, api: 13, costs: 45 },
+  2027: { subs: 20, api: 22, costs: 77 },
+  2028: { subs: 28, api: 36, costs: 111 },
 };
 
-function updateCalc() {
-  const d = +sliders.dau.value;
-  const m = +sliders.msgs.value;
-  const c = +sliders.cpm.value;
-  const f = +sliders.freq.value / 100;
+// Fill rate: % of available ad slots filled by advertisers
+const US_FILL  = { 2026: 0.10, 2027: 0.30, 2028: 0.50 };
+const ROW_FILL = { 2026: 0.00, 2027: 0.10, 2028: 0.25 };
 
-  document.getElementById('lbl-dau').textContent = d + 'M';
-  document.getElementById('lbl-msgs').textContent = m;
-  document.getElementById('lbl-cpm').textContent = '$' + c;
-  document.getElementById('lbl-freq').textContent = f * 100 + '%';
+// DAU growth (ad-eligible users, in millions)
+const US_DAU  = { 2026: 40, 2027: 48, 2028: 58 };   // ~20% YoY
+const ROW_DAU = { 2026: 380, 2027: 475, 2028: 594 }; // ~25% YoY
+const ROW_CPM = 20;
 
-  const r = calcRevenue(d, m, f, c);
-  document.getElementById('calc-impr').textContent = (r.dailyImpr / 1e6).toFixed(0) + 'M';
-  document.getElementById('calc-daily').textContent = fmt(r.dailyRev);
-  document.getElementById('calc-annual').textContent = fmt(r.annualRev);
-  document.getElementById('calc-arpu').textContent = '$' + r.arpu.toFixed(2);
+let scope = 'us';
 
-  // Update KPIs
-  document.getElementById('kpi-annual').textContent = fmt(r.annualRev);
-  document.getElementById('kpi-daily').textContent = fmt(r.dailyRev);
-  document.getElementById('kpi-arpu').textContent = '$' + r.arpu.toFixed(2);
-  const globalCpm = 25; // blended global CPM
-  const globalR = calcRevenue(420, m, f, globalCpm);
-  document.getElementById('kpi-global').textContent = fmt(globalR.annualRev);
+const sl = {
+  msgs: document.getElementById('s-msgs'),
+  freq: document.getElementById('s-freq'),
+  cpm:  document.getElementById('s-cpm'),
+};
+
+function fmt(n) {
+  if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
+  if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(0) + 'M';
+  return '$' + Math.round(n);
+}
+function fB(n) { return '$' + n.toFixed(1) + 'B'; }
+
+function annualRev(dauM, msgs, freqPct, cpm) {
+  return dauM * 1e6 * (msgs * freqPct / 100) * (cpm / 1000) * 365;
 }
 
-Object.values(sliders).forEach(s => s.addEventListener('input', updateCalc));
+function setScope(s) {
+  scope = s;
+  document.getElementById('tab-us').className = 'tab-btn' + (s === 'us' ? ' active' : '');
+  document.getElementById('tab-global').className = 'tab-btn' + (s === 'global' ? ' active' : '');
+  updateAll();
+}
 
-// ── Revenue Matrix ──
-const dauList = [40, 80, 150, 250, 350, 420, 520];
-const msgsList = [5, 8, 10, 15, 20, 30, 50];
+let adChart, revChart, arpuChart;
 
-function buildMatrix() {
-  const tbody = document.getElementById('matrix-body');
-  tbody.innerHTML = '';
-  msgsList.forEach(msgs => {
-    const tr = document.createElement('tr');
-    if (msgs === 10) tr.className = 'highlight-row';
-    const tdLabel = document.createElement('td');
-    tdLabel.textContent = msgs;
-    tdLabel.style.fontWeight = '600';
-    tr.appendChild(tdLabel);
+function initCharts() {
+  adChart = new Chart(document.getElementById('ad-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['2026E', '2027E', '2028E'],
+      datasets: [
+        { label: 'US Ad Revenue', data: [0,0,0], backgroundColor: '#f59e0b', borderRadius: 6 },
+        { label: 'RoW Ad Revenue', data: [0,0,0], backgroundColor: '#06b6d4', borderRadius: 6 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        title: { display: true, text: 'Ad Revenue Growth ($B)', color: '#e2e8f0', font: { size: 13 } }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#94a3b8' }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#94a3b8', callback: v => '$'+v.toFixed(1)+'B' }, grid: { color: 'rgba(148,163,184,0.1)' }, beginAtZero: true }
+      }
+    }
+  });
 
-    dauList.forEach(d => {
-      const r = calcRevenue(d, msgs, FREQ, CPM);
-      const val = r.annualRev / 1e9;
-      const td = document.createElement('td');
-      td.textContent = '$' + val.toFixed(1) + 'B';
-      if (val < 5) td.className = 'heat-1';
-      else if (val < 15) td.className = 'heat-2';
-      else if (val < 30) td.className = 'heat-3';
-      else td.className = 'heat-4';
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
+  revChart = new Chart(document.getElementById('rev-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['2025', '2026E', '2027E', '2028E'],
+      datasets: [
+        { label: 'Subscriptions', data: [12,15,20,28], backgroundColor: '#3b82f6', borderRadius: 4 },
+        { label: 'API / Enterprise', data: [8,13,22,36], backgroundColor: '#8b5cf6', borderRadius: 4 },
+        { label: 'US Ad Revenue', data: [0,0,0,0], backgroundColor: '#f59e0b', borderRadius: 4 },
+        { label: 'RoW Ad Revenue', data: [0,0,0,0], backgroundColor: '#06b6d4', borderRadius: 4 },
+        { label: 'Total Costs', data: [28,45,77,111], type: 'line', borderColor: '#ef4444', borderWidth: 3, borderDash: [8,4], pointRadius: 5, pointBackgroundColor: '#ef4444', fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 } } },
+        title: { display: true, text: 'Revenue Streams vs Total Costs ($B)', color: '#e2e8f0', font: { size: 13 } }
+      },
+      scales: {
+        x: { stacked: true, ticks: { color: '#94a3b8' }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#94a3b8', callback: v => '$'+v+'B' }, grid: { color: 'rgba(148,163,184,0.1)' }, max: 120 }
+      }
+    }
+  });
+
+  arpuChart = new Chart(document.getElementById('arpu-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Google\n(All Ads)', 'Google\n(Search)', 'Meta\n(NA)', 'ChatGPT'],
+      datasets: [{
+        data: [504, 386, 288, 137],
+        backgroundColor: ['#6b7280','#6b7280','#6b7280','#f59e0b'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, title: { display: true, text: 'US/NA Annual Ad ARPU', color: '#e2e8f0', font: { size: 12 } } },
+      scales: {
+        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+        y: { ticks: { color: '#94a3b8', callback: v => '$'+v }, grid: { color: 'rgba(148,163,184,0.1)' }, beginAtZero: true }
+      }
+    }
   });
 }
-buildMatrix();
 
-// ── Sensitivity Table ──
-const sensMsgs = [5, 8, 10, 12, 15, 20, 25, 30, 40, 50];
-function buildSensitivity() {
-  const tbody = document.getElementById('sensitivity-body');
+function updateAll() {
+  const msgs = +sl.msgs.value;
+  const freq = +sl.freq.value;
+  const cpm  = +sl.cpm.value;
+  const isGlobal = scope === 'global';
+
+  document.getElementById('l-msgs').textContent = msgs;
+  document.getElementById('l-freq').textContent = freq + '%';
+  document.getElementById('l-cpm').textContent = '$' + cpm;
+
+  // Year-specific calculations with DAU growth
+  const usAd = {}, rowAd = {};
+  [2026, 2027, 2028].forEach(y => {
+    const usFullY = annualRev(US_DAU[y], msgs, freq, cpm);
+    usAd[y] = (usFullY / 1e9) * US_FILL[y];
+
+    const rowFullY = annualRev(ROW_DAU[y], msgs, freq, ROW_CPM);
+    rowAd[y] = (rowFullY / 1e9) * ROW_FILL[y];
+  });
+  usAd[2025] = 0;
+  rowAd[2025] = 0;
+
+  // ARPU based on 2026 US DAU (launch year base)
+  const usFullBase = annualRev(US_DAU[2026], msgs, freq, cpm);
+  const usArpu = usFullBase / (US_DAU[2026] * 1e6);
+
+  // 2028 annual ad revenue for scope
+  const ad28 = isGlobal ? usAd[2028] + rowAd[2028] : usAd[2028];
+  const yr1 = isGlobal ? usAd[2026] + rowAd[2026] : usAd[2026];
+
+  // KPIs
+  document.getElementById('k-yr1').textContent = fB(yr1);
+  document.getElementById('k-yr1-note').textContent = isGlobal ? 'Global ad revenue' : 'US ad revenue';
+  document.getElementById('k-28').textContent = fB(ad28);
+  document.getElementById('k-28-lbl').textContent = (isGlobal ? 'Global' : 'US') + ' 2028E Ad Revenue';
+  document.getElementById('k-28-note').textContent = 'Annual, with user growth';
+  document.getElementById('k-arpu').textContent = '$' + Math.round(usArpu);
+
+  // Insight
+  const totalAd28 = usAd[2028] + rowAd[2028];
+  const pctCosts = (totalAd28 / FIN[2028].costs * 100).toFixed(0);
+  if (isGlobal) {
+    document.getElementById('insight').innerHTML =
+      'By 2028, with growing users and maturing advertiser demand, ChatGPT ads could generate <strong>' + fB(ad28) +
+      '/year globally</strong> (US: ' + fB(usAd[2028]) + ', RoW: ' + fB(rowAd[2028]) +
+      '). Year 1 (2026): <strong>' + fB(yr1) + '</strong>. That\'s ~' + pctCosts + '% of 2028 projected costs.';
+  } else {
+    document.getElementById('insight').innerHTML =
+      'By 2028, US ads could generate <strong>' + fB(ad28) +
+      '/year</strong> with 58M DAU and 50% fill rate. Year 1 (2026): <strong>' + fB(yr1) +
+      '</strong> with 40M DAU and 10% fill rate. Switch to Global to add RoW (+' + fB(rowAd[2028]) + ' in 2028).';
+  }
+
+  // Path to Profitability
+  const totalRev28 = FIN[2028].subs + FIN[2028].api + usAd[2028] + rowAd[2028];
+  const gap28 = FIN[2028].costs - totalRev28;
+  document.getElementById('profit-box').innerHTML =
+    '<strong>2028E with ads:</strong> Subs $' + FIN[2028].subs + 'B + API $' + FIN[2028].api + 'B + Ads ' + fB(totalAd28) +
+    ' = <strong>' + fB(totalRev28) + ' total revenue</strong> vs $' + FIN[2028].costs + 'B costs.' +
+    ' <span style="color:var(--red);">Gap: ' + fB(gap28) + '</span>.' +
+    '<br><br>Ads at ' + fB(totalAd28) + ' cover <strong>~' + pctCosts + '% of costs</strong> — meaningful but not sufficient alone.' +
+    ' The path to 2030 profitability requires user growth from 800M to 2.6B WAU,' +
+    ' which increases both subscription revenue and the ad-eligible audience.' +
+    ' <strong>Every 100M new DAU adds ~' + fB(annualRev(100, msgs, freq, ROW_CPM) / 1e9 * 0.25) + '/year</strong> in ad revenue at 25% fill rate.';
+
+  // Financial table header
+  const thead = document.getElementById('fin-head');
+  if (isGlobal) {
+    thead.innerHTML = '<tr><th>Year</th><th>Subs</th><th>API/Ent</th><th style="color:var(--accent);">US Ads</th><th style="color:var(--cyan);">RoW Ads</th><th>Total</th><th>Costs</th><th style="color:var(--red);">Burn</th></tr>';
+  } else {
+    thead.innerHTML = '<tr><th>Year</th><th>Subs</th><th>API/Ent</th><th style="color:var(--accent);">US Ads</th><th>Total</th><th>Costs</th><th style="color:var(--red);">Burn</th></tr>';
+  }
+
+  // Financial table body
+  const tbody = document.getElementById('fin-body');
   tbody.innerHTML = '';
-  sensMsgs.forEach(msgs => {
-    const r = calcRevenue(DAU_US, msgs, FREQ, CPM);
+  [2025, 2026, 2027, 2028].forEach(y => {
+    const d = FIN[y];
+    const ua = usAd[y] || 0;
+    const ra = rowAd[y] || 0;
+    const ads = isGlobal ? ua + ra : ua;
+    const total = d.subs + d.api + ads;
+    const burn = total - d.costs;
     const tr = document.createElement('tr');
-    if (msgs === 10) tr.className = 'highlight-row';
-    tr.innerHTML = `
-      <td>${msgs}</td>
-      <td>${(r.dailyImpr/1e6).toFixed(0)}M</td>
-      <td>${fmt(r.annualRev)}</td>
-      <td>$${r.arpu.toFixed(2)}</td>
-    `;
+    if (y === 2028) tr.className = 'hl';
+
+    if (isGlobal) {
+      tr.innerHTML =
+        '<td>' + y + (y>2025?'E':'') + '</td>' +
+        '<td>$' + d.subs + 'B</td><td>$' + d.api + 'B</td>' +
+        '<td style="color:var(--accent);font-weight:600;">' + (ua > 0.05 ? fB(ua) : '—') + '</td>' +
+        '<td style="color:var(--cyan);font-weight:600;">' + (ra > 0.05 ? fB(ra) : '—') + '</td>' +
+        '<td>' + fB(total) + '</td><td>$' + d.costs + 'B</td>' +
+        '<td style="color:var(--red);">' + fB(burn) + '</td>';
+    } else {
+      tr.innerHTML =
+        '<td>' + y + (y>2025?'E':'') + '</td>' +
+        '<td>$' + d.subs + 'B</td><td>$' + d.api + 'B</td>' +
+        '<td style="color:var(--accent);font-weight:600;">' + (ua > 0.05 ? fB(ua) : '—') + '</td>' +
+        '<td>' + fB(d.subs + d.api + ua) + '</td><td>$' + d.costs + 'B</td>' +
+        '<td style="color:var(--red);">' + fB(d.subs + d.api + ua - d.costs) + '</td>';
+    }
     tbody.appendChild(tr);
   });
+
+  // Ad Revenue Ramp chart
+  if (isGlobal) {
+    adChart.data.datasets[0].data = [usAd[2026], usAd[2027], usAd[2028]];
+    adChart.data.datasets[1].data = [rowAd[2026], rowAd[2027], rowAd[2028]];
+    adChart.data.datasets[1].hidden = false;
+  } else {
+    adChart.data.datasets[0].data = [usAd[2026], usAd[2027], usAd[2028]];
+    adChart.data.datasets[1].data = [0, 0, 0];
+    adChart.data.datasets[1].hidden = true;
+  }
+  adChart.options.plugins.title.text = (isGlobal ? 'Global' : 'US') + ' Ad Revenue Growth ($B)';
+  adChart.update();
+
+  // Revenue vs Costs chart
+  revChart.data.datasets[2].data = [0, usAd[2026], usAd[2027], usAd[2028]];
+  if (isGlobal) {
+    revChart.data.datasets[3].data = [0, rowAd[2026], rowAd[2027], rowAd[2028]];
+    revChart.data.datasets[3].hidden = false;
+  } else {
+    revChart.data.datasets[3].data = [0, 0, 0, 0];
+    revChart.data.datasets[3].hidden = true;
+  }
+  revChart.update();
+
+  // ARPU chart + table
+  arpuChart.data.datasets[0].data[3] = Math.round(usArpu);
+  arpuChart.data.labels[3] = 'ChatGPT\n@' + msgs + ' msgs';
+  arpuChart.update();
+  document.getElementById('arpu-td').innerHTML = '<strong>$' + Math.round(usArpu) + '</strong>';
+  document.getElementById('arpu-rev-td').innerHTML = '<strong>' + fmt(usFullBase) + '</strong>';
+
+  // Scenarios — show 2028E annual ad revenue
+  const scLabel = isGlobal ? 'Global' : 'US';
+  document.getElementById('sc-title').textContent = 'Scenario Analysis (' + scLabel + ', 2028E Annual)';
+
+  const scenarios = [
+    { msgs: 15, freq: 20, pfx: 'c' },
+    { msgs: 25, freq: 25, pfx: 'b' },
+    { msgs: 40, freq: 35, pfx: 'o' },
+  ];
+  scenarios.forEach(s => {
+    const usF28 = annualRev(US_DAU[2028], s.msgs, s.freq, cpm);
+    const us28 = (usF28 / 1e9) * US_FILL[2028];
+    const usArp = usF28 / (US_DAU[2028] * 1e6);
+    let val28;
+    if (isGlobal) {
+      const rowF28 = annualRev(ROW_DAU[2028], s.msgs, s.freq, ROW_CPM);
+      const row28 = (rowF28 / 1e9) * ROW_FILL[2028];
+      val28 = us28 + row28;
+    } else {
+      val28 = us28;
+    }
+    document.getElementById('sc-' + s.pfx + '-val').textContent = fB(val28);
+    document.getElementById('sc-' + s.pfx + '-d1').textContent = US_DAU[2028] + 'M US DAU | 50% fill';
+    document.getElementById('sc-' + s.pfx + '-d2').textContent = 'ARPU: $' + Math.round(usArp);
+  });
 }
-buildSensitivity();
 
-// ── ARPU Chart ──
-new Chart(document.getElementById('arpu-chart'), {
-  type: 'bar',
-  data: {
-    labels: ['Google\n(All Ads)', 'Google\n(Search)', 'Meta\n(NA)', 'ChatGPT\n@10 msgs', 'ChatGPT\n@20 msgs', 'ChatGPT\n@30 msgs', 'ChatGPT\n@50 msgs'],
-    datasets: [{
-      label: 'US/NA ARPU ($/year)',
-      data: [504, 386, 288, 54.75, 109.50, 164.25, 273.75],
-      backgroundColor: ['#6b7280','#6b7280','#6b7280','#f59e0b','#f59e0b','#f59e0b','#f59e0b'],
-      borderRadius: 6,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      title: { display: true, text: 'US/NA Annual Ad ARPU', color: '#e2e8f0', font: { size: 14 } }
-    },
-    scales: {
-      x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
-      y: {
-        ticks: { color: '#94a3b8', callback: v => '$' + v },
-        grid: { color: 'rgba(148,163,184,0.1)' },
-        beginAtZero: true
-      }
-    }
-  }
-});
-
-// ── Sensitivity Chart ──
-new Chart(document.getElementById('sensitivity-chart'), {
-  type: 'bar',
-  data: {
-    labels: sensMsgs.map(m => m + ' msgs'),
-    datasets: [{
-      label: 'Annual Revenue ($B)',
-      data: sensMsgs.map(m => calcRevenue(DAU_US, m, FREQ, CPM).annualRev / 1e9),
-      backgroundColor: sensMsgs.map(m => m === 10 ? '#f59e0b' : '#3b82f6'),
-      borderRadius: 6,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      title: { display: true, text: 'Annual Revenue by Messages/Day (US 40M DAU)', color: '#e2e8f0', font: { size: 14 } }
-    },
-    scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { display: false } },
-      y: {
-        ticks: { color: '#94a3b8', callback: v => '$' + v + 'B' },
-        grid: { color: 'rgba(148,163,184,0.1)' },
-        beginAtZero: true
-      }
-    }
-  }
-});
-
-// ── Infrastructure Gap Chart ──
-const years = ['2025', '2026E', '2027E', '2028E', '2030E'];
-new Chart(document.getElementById('gap-chart'), {
-  type: 'bar',
-  data: {
-    labels: years,
-    datasets: [
-      {
-        label: 'Subscriptions',
-        data: [9, 14, 19, 28, 53],
-        backgroundColor: '#3b82f6',
-        borderRadius: 4,
-      },
-      {
-        label: 'API/Enterprise',
-        data: [11, 14, 18, 25, 35],
-        backgroundColor: '#8b5cf6',
-        borderRadius: 4,
-      },
-      {
-        label: 'Ad Revenue ($25 blended CPM)',
-        data: [0, 1.0, 4, 8, 8],
-        backgroundColor: '#f59e0b',
-        borderRadius: 4,
-      },
-      {
-        label: 'Annual Cash Burn (costs)',
-        data: [28, 45, 77, 111, 96],
-        type: 'line',
-        borderColor: '#ef4444',
-        borderWidth: 3,
-        borderDash: [8, 4],
-        pointRadius: 4,
-        pointBackgroundColor: '#ef4444',
-        fill: false,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { labels: { color: '#94a3b8' } },
-      title: { display: true, text: 'Revenue vs Annual Costs ($B)', color: '#e2e8f0', font: { size: 14 } }
-    },
-    scales: {
-      x: {
-        stacked: true,
-        ticks: { color: '#94a3b8' },
-        grid: { display: false }
-      },
-      y: {
-        stacked: true,
-        ticks: { color: '#94a3b8', callback: v => '$' + v + 'B' },
-        grid: { color: 'rgba(148,163,184,0.1)' },
-        max: 140
-      }
-    }
-  }
-});
+Object.values(sl).forEach(s => s.addEventListener('input', updateAll));
+initCharts();
+updateAll();
 </script>
 </body>
 </html>
